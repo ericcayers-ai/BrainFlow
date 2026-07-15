@@ -5,7 +5,7 @@ BrainFlow is a **desktop-first, local-first** knowledge and workflow environment
 **Primary surface:** the AI Workflow Suite (goal, editable workflow graph, execution state, artifacts, evidence/provenance).  
 **Secondary:** vault rail, source-reference nodes, and a file viewer for originals — sources stay immutable by default.
 
-> Status: **Unsigned Windows alpha** (`v0.1.0`) — foundation vertical slice + knowledge-workspace scaffolding in-tree. Phase 1 sizes/startup recorded; scripted vertical-slice E2E green. See [docs/REMAINING_GAPS.md](docs/REMAINING_GAPS.md). **Not GA.** Installers are not code-signed; macOS/Linux packaging is not verified. Repository: [github.com/ericcayers-ai/BrainFlow](https://github.com/ericcayers-ai/BrainFlow).
+> Status: **Unsigned Windows alpha** (`v0.1.1`) — foundation vertical slice + knowledge-workspace scaffolding in-tree. Phase 1 sizes/startup recorded; scripted vertical-slice E2E and CI green. See [docs/REMAINING_GAPS.md](docs/REMAINING_GAPS.md). **Not GA.** Installers are not code-signed; macOS/Linux packaging is not verified. Repository / releases: [github.com/ericcayers-ai/BrainFlow](https://github.com/ericcayers-ai/BrainFlow/releases/tag/v0.1.1).
 
 ## Product contract (summary)
 
