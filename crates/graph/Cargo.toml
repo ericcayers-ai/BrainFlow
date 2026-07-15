@@ -1,0 +1,12 @@
+[package]
+name = "brainflow-graph"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Typed property graph contracts and workflow projections (stub)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }

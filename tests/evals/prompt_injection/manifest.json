@@ -1,0 +1,18 @@
+{
+  "suite": "prompt_injection",
+  "version": 2,
+  "cases": [
+    "direct_override.json",
+    "indirect_document.json",
+    "hidden_text.json",
+    "exfil_attempt.json",
+    "tool_confusion.json",
+    "poisoned_retrieval.json",
+    "runaway_loop.json",
+    "confused_deputy.json",
+    "excessive_agency.json",
+    "poisoned_model_metadata.json"
+  ],
+  "fail_closed": true,
+  "notes": "Deterministic CI always; optional live multi-run variance behind BRAINFLOW_LIVE_EVAL=1"
+}

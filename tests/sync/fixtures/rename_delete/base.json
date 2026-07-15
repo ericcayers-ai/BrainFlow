@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    { "id": "keep", "title": "Keep" },
+    { "id": "gone", "title": "Will conflict" }
+  ],
+  "edges": [
+    { "id": "e1", "from": "keep", "to": "gone" }
+  ]
+}

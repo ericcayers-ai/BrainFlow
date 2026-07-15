@@ -1,0 +1,376 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/document-bundle/v1.json",
+  "title": "BrainFlow DocumentBundle",
+  "description": "Normalized ingestion output. Content is untrusted evidence for planners — never system privilege.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "evidence_trust",
+    "source",
+    "metadata",
+    "segments",
+    "structure",
+    "images",
+    "transcripts",
+    "confidence",
+    "warnings",
+    "errors",
+    "security",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "bundle_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "evidence_trust": {
+      "type": "string",
+      "const": "untrusted",
+      "description": "Planner prompt assembly must treat all segment text as hostile data."
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file_id",
+        "path_mode",
+        "content_hash",
+        "mime_type",
+        "size_bytes"
+      ],
+      "properties": {
+        "file_id": { "type": "string", "format": "uuid" },
+        "path": { "type": "string" },
+        "path_mode": {
+          "type": "string",
+          "enum": ["link", "copy"]
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "mime_type": { "type": "string", "minLength": 1 },
+        "sniffed_mime": { "type": "string" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "modified_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_id", "adapter_version"],
+      "properties": {
+        "title": { "type": "string" },
+        "authors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "language": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "modified_at": { "type": "string", "format": "date-time" },
+        "adapter_id": { "type": "string", "minLength": 1 },
+        "adapter_version": { "type": "string", "minLength": 1 },
+        "extra": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/segment" }
+    },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "headings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/heading" }
+        },
+        "tables": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/table" }
+        },
+        "pages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/page_ref" }
+        },
+        "slides": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/slide_ref" }
+        },
+        "sheets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sheet_ref" }
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/image_ref" }
+    },
+    "transcripts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/transcript_span" }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/issue" }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/issue" }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quarantine_actions", "active_content_flags"],
+      "properties": {
+        "quarantine_actions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "macros_blocked": { "type": "boolean" },
+        "scripts_stripped": { "type": "boolean" },
+        "active_content_flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "limits_applied": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["derived_from", "analyzed_at", "pipeline_version"],
+      "properties": {
+        "derived_from": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file_id", "content_hash"],
+            "properties": {
+              "file_id": { "type": "string", "format": "uuid" },
+              "content_hash": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              "role": { "type": "string", "default": "source" }
+            }
+          }
+        },
+        "analyzed_at": { "type": "string", "format": "date-time" },
+        "pipeline_version": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "NeedsPassword",
+            "NeedsAdapter",
+            "Corrupt",
+            "ResourceLimit",
+            "DrmBlocked",
+            "PartialSuccess",
+            "Quarantined",
+            "Truncated",
+            "Unsupported"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "detail": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "offset",
+            "heading_path",
+            "pdf_page",
+            "docx_para",
+            "xlsx_cell",
+            "pptx_slide",
+            "archive_entry",
+            "line",
+            "image",
+            "custom"
+          ]
+        },
+        "offset_start": { "type": "integer", "minimum": 0 },
+        "offset_end": { "type": "integer", "minimum": 0 },
+        "heading_path": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "page": { "type": "integer", "minimum": 1 },
+        "bbox": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "paragraph_index": { "type": "integer", "minimum": 0 },
+        "sheet": { "type": "string" },
+        "cell": { "type": "string" },
+        "slide": { "type": "integer", "minimum": 1 },
+        "entry_path": { "type": "string" },
+        "line_start": { "type": "integer", "minimum": 1 },
+        "line_end": { "type": "integer", "minimum": 1 },
+        "extra": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "order"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "text",
+            "heading",
+            "table",
+            "code",
+            "image_ref",
+            "media",
+            "raw_meta",
+            "cell"
+          ]
+        },
+        "text": { "type": "string" },
+        "order": { "type": "integer", "minimum": 0 },
+        "locator": { "$ref": "#/$defs/locator" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "language": { "type": "string" }
+      }
+    },
+    "heading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "text", "path"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "text": { "type": "string" },
+        "path": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "segment_id": { "type": "string" }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rows"],
+      "properties": {
+        "id": { "type": "string" },
+        "caption": { "type": "string" },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "locator": { "$ref": "#/$defs/locator" }
+      }
+    },
+    "page_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["page"],
+      "properties": {
+        "page": { "type": "integer", "minimum": 1 },
+        "segment_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "slide_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slide"],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string" },
+        "segment_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "sheet_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "segment_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "image_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "mime_type": { "type": "string" },
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "exif": { "type": "object", "additionalProperties": true },
+        "ocr_text": { "type": ["string", "null"] },
+        "ocr_status": {
+          "type": "string",
+          "enum": ["not_run", "stub", "ok", "failed", "unavailable"]
+        },
+        "locator": { "$ref": "#/$defs/locator" }
+      }
+    },
+    "transcript_span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start_ms", "end_ms", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "start_ms": { "type": "integer", "minimum": 0 },
+        "end_ms": { "type": "integer", "minimum": 0 },
+        "text": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,116 @@
+# --- Dependencies & build ---
+node_modules/
+dist/
+dist-ssr/
+build/
+out/
+.target/
+target/
+*.tsbuildinfo
+.vite/
+.turbo/
+.cache/
+.parcel-cache/
+.eslintcache
+.nyc_output/
+coverage/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+env/
+ENV/
+*.whl
+*.egg
+Cargo.lock.bak
+*.rs.bk
+
+# --- IDE / OS ---
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# --- Env & secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+secrets.json
+.secrets/
+
+# --- BrainFlow local / derived (never portable) ---
+**/.brainflow/local/
+**/index.sqlite
+**/index.sqlite-*
+**/*.sqlite-wal
+**/*.sqlite-shm
+**/embeddings/
+**/thumbnails/
+**/extraction-cache/
+**/run-events/
+**/model-registry-cache/
+**/crash-reports/
+
+# --- Packaging / Tauri ---
+src-tauri/target/
+*.dmg
+*.AppImage
+*.msi
+*.exe
+!scripts/**/*.exe
+*.deb
+*.rpm
+*.app
+
+# --- Logs & temp ---
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# --- OneDrive / cloud sync conflict markers ---
+*_Conflict*
+*conflicted copy*
+*.sync-conflict-*
+~$*
+*.tmp.driveupload
+*.tmp.drivedownload
+
+# --- Test / eval artifacts (local runs) ---
+tests/corpus/_generated/
+tests/evals/_results/
+*.profraw
+*.gcda
+*.gcno
+
+# --- Native tooling ---
+*.pdb
+*.ilk
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+!vendor/**/*.dll

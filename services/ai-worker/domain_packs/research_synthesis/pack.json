@@ -1,0 +1,37 @@
+{
+  "id": "research_synthesis",
+  "version": "1.0.0",
+  "title": "Research synthesis",
+  "description": "Synthesize evidence into literature-style summaries with claim/evidence discipline.",
+  "vocabulary": {
+    "goal": "research question",
+    "artifact": "synthesis report",
+    "task": "analysis step"
+  },
+  "default_goal_hints": [
+    "Extract claims and supporting evidence",
+    "Flag contradictions and uncertainties",
+    "Write a synthesis with claim_kind labels"
+  ],
+  "allowed_node_types": [
+    "extract",
+    "retrieve",
+    "llm_plan",
+    "summarize",
+    "write_artifact",
+    "verify",
+    "human_approve"
+  ],
+  "default_permission_class": "safe_overlay",
+  "templates": {
+    "artifact_report": "artifacts/{workflow_id}/{run_id}/synthesis.md",
+    "artifact_claims": "artifacts/{workflow_id}/{run_id}/claims.json"
+  },
+  "rubric": {
+    "completeness": "Open questions captured",
+    "ordering": "Evidence before recommendations",
+    "grounding": "supports/contradicts edges via provenance",
+    "safety": "No source overwrite; network/publish need approval"
+  },
+  "eval_cases": ["research_synthesis_basic", "research_contradiction"]
+}

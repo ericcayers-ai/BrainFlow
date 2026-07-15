@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/model-registry/v1.json",
+  "title": "BrainFlow Model Registry Manifest",
+  "description": "Signed, versioned catalog of models and provenance-backed scores.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "issued_at",
+    "issuer",
+    "models",
+    "signature",
+    "rollout_stage"
+  ],
+  "properties": {
+    "manifest_version": { "type": "integer", "const": 1 },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "issuer": { "type": "string", "minLength": 1 },
+    "previous_manifest_digest": { "type": ["string", "null"] },
+    "rollout_stage": {
+      "type": "string",
+      "enum": ["staged", "ga", "revoked"]
+    },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/model" }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg", "key_id", "value"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["ed25519", "bf-hmac-v1", "dev-unsigned"]
+        },
+        "key_id": { "type": "string" },
+        "value": { "type": "string" },
+        "content_digest": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "model": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "display_name", "source", "digests", "modalities", "license"],
+      "properties": {
+        "id": { "type": "string" },
+        "display_name": { "type": "string" },
+        "source": { "type": "string" },
+        "runtime_name": { "type": "string" },
+        "preferred_provider": { "type": "string" },
+        "release_date": { "type": "string" },
+        "digests": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "quantizations": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "parameter_count": { "type": "number" },
+        "context_lengths": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "modalities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": { "type": "boolean" }
+        },
+        "license": { "type": "string" },
+        "known_security_issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "memory_formula": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "params": { "type": "object" }
+          }
+        },
+        "quality_scores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["metric", "value", "dataset_id", "job_id", "timestamp", "model_digest"],
+            "properties": {
+              "metric": { "type": "string" },
+              "metric_version": { "type": "string" },
+              "value": { "type": "number" },
+              "dataset_id": { "type": "string" },
+              "job_id": { "type": "string" },
+              "timestamp": { "type": "string" },
+              "model_digest": { "type": "string" },
+              "hardware_class": { "type": "string" }
+            }
+          }
+        },
+        "benchmark_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "download_size_mb": { "type": "number" },
+        "eval_reliability": { "type": "number" },
+        "performance_floor": { "type": "number" },
+        "quant_penalty": { "type": "number" },
+        "remote_code_required": { "type": "boolean" }
+      }
+    }
+  }
+}

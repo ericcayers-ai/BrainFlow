@@ -1,0 +1,40 @@
+{
+  "name": "brainflow",
+  "private": true,
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "BrainFlow monorepo",
+  "workspaces": [
+    "apps/desktop",
+    "packages/schemas",
+    "packages/plugin-sdk"
+  ],
+  "scripts": {
+    "dev:desktop": "npm run tauri --workspace desktop -- dev",
+    "build:desktop": "npm run tauri --workspace desktop -- build",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test:schemas": "npm run build -w @brainflow/schemas && npm run test -w @brainflow/schemas",
+    "lint:desktop": "npm run build -w desktop",
+    "a11y": "node scripts/a11y-check.cjs",
+    "security:scan": "node scripts/security-scan-placeholder.cjs",
+    "security:placeholder": "node scripts/security-scan-placeholder.cjs",
+    "smoke:vertical-slice": "node scripts/vertical-slice-smoke.cjs",
+    "test:e2e:vertical-slice": "node scripts/vertical-slice-e2e.cjs",
+    "smoke:graph-ui": "npm run smoke:graph-ui -w desktop",
+    "soak:10k": "python scripts/soak_10k_notes.py",
+    "measure:cold-start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/measure-cold-start.ps1",
+    "fuzz:entrypoints": "node scripts/fuzz-entrypoint.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.12",
+    "katex": "^0.17.0",
+    "marked": "^18.0.6"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/katex": "^0.16.8"
+  }
+}

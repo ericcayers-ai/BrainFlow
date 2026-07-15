@@ -1,0 +1,27 @@
+[package]
+name = "brainflow-sync"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "GitHub sync state machine (embedded Git; never an AI tool)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+# gitoxide preferred for discovery/status; git2 escape hatch for porcelain (ADR 0005).
+gix = { version = "0.70", default-features = false, features = ["basic"] }
+git2 = { version = "0.20", default-features = true }
+keyring = "3.6"
+ureq = { version = "2.12", default-features = true, features = ["json"] }
+base64 = "0.22"
+hostname = "0.4"
+regex = "1"
+tempfile = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

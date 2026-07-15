@@ -1,0 +1,17 @@
+{
+  "name": "@brainflow/plugin-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Capability-based plugin manifests and WASM sandbox contract (stub)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  }
+}

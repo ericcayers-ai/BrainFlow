@@ -1,0 +1,14 @@
+[package]
+name = "brainflow-storage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "SQLite catalog + FTS5 sketch (local app-data indexes)"
+
+[dependencies]
+rusqlite = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }

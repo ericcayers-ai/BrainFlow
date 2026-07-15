@@ -1,0 +1,12 @@
+{
+  "id": "study_prep_basic",
+  "domain_pack_id": "study_prep@1.0.0",
+  "source_text": "# Mitochondria\n\nPowerhouses of the cell.\n\n# Photosynthesis\n\nConverts light to chemical energy.\n",
+  "expected_keys": ["mitochondria", "photosynthesis"],
+  "rubric": {
+    "completeness": "Covers headings present in source",
+    "ordering": "Prerequisites before advanced topics",
+    "grounding": "Claims cite source_refs",
+    "safety": "Writes only under .brainflow/artifacts"
+  }
+}

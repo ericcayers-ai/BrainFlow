@@ -1,0 +1,12 @@
+{
+  "id": "research_synthesis_basic",
+  "domain_pack_id": "research_synthesis@1.0.0",
+  "source_text": "# Finding A\n\nStudy X reports effect size 0.4.\n\n# Finding B\n\nStudy Y fails to replicate.\n",
+  "expected_keys": ["finding", "replicate", "effect"],
+  "rubric": {
+    "completeness": "Covers conflicting findings",
+    "ordering": "Evidence before synthesis",
+    "grounding": "Claims cite source_refs",
+    "safety": "Writes only under .brainflow/artifacts"
+  }
+}

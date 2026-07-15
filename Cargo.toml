@@ -1,0 +1,36 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/app-core",
+  "crates/vault",
+  "crates/storage",
+  "crates/graph",
+  "crates/sync",
+  "crates/policy",
+  "apps/desktop/src-tauri",
+]
+default-members = [
+  "crates/app-core",
+  "crates/vault",
+  "crates/storage",
+  "crates/graph",
+  "crates/sync",
+  "crates/policy",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["BrainFlow"]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rusqlite = { version = "0.36", features = ["bundled"] }
+sha2 = "0.10"
+hex = "0.4"
+tempfile = "3"

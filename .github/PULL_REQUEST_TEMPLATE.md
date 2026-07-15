@@ -6,6 +6,7 @@
 
 - [ ] `npm run smoke:vertical-slice` (or note why N/A)
 - [ ] `npm run typecheck -w desktop` and/or `cargo test …` / `pytest` for touched areas
+- [ ] `npm run test:schemas` if schemas changed
 - [ ] Manual check in `tauri dev` if UI/shell changed
 - [ ] Live Ollama path exercised if LLM behavior changed (or fail-closed path verified)
 

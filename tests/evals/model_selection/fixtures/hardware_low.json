@@ -1,0 +1,8 @@
+{
+  "os": "Windows",
+  "arch": "AMD64",
+  "cpu": { "logical_cores": 4, "processor": "fixture-low" },
+  "ram": { "total_bytes": 8589934592, "available_bytes": 4294967296, "total_gb": 8, "available_gb": 4 },
+  "disk": { "free_gb": 40 },
+  "gpu": []
+}

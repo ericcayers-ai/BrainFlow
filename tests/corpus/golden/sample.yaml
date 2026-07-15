@@ -1,0 +1,6 @@
+﻿title: corpus
+items:
+  - one
+  - two
+nested:
+  ok: true

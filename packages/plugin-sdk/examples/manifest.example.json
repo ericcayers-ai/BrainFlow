@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "com.example.study-exporter",
+  "name": "Study deck exporter",
+  "version": "0.1.0",
+  "brainflow_api": "^0.1.0",
+  "permissions": [
+    "ui.contribute",
+    "vault.read",
+    "export.adapter",
+    "network.none"
+  ],
+  "contributions": {
+    "commands": [
+      {
+        "id": "study-exporter.export-anki",
+        "title": "Export flashcards (Anki package)",
+        "hotkey": "Ctrl+Shift+A"
+      }
+    ],
+    "exporters": [
+      {
+        "id": "anki-apkg",
+        "format": "application/vnd.anki"
+      }
+    ],
+    "views": [
+      {
+        "id": "study-exporter.panel",
+        "title": "Deck preview",
+        "placement": "drawer"
+      }
+    ]
+  },
+  "entry": "dist/plugin.wasm",
+  "signature": "REPLACE_WITH_ED25519_SIGNATURE_WHEN_MARKETPLACE_LANDS"
+}

@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  schemas-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install
+        run: npm install
+      - name: Build schemas
+        run: npm run build -w @brainflow/schemas
+      - name: Test schemas
+        run: npm run test -w @brainflow/schemas
+      - name: Typecheck plugin-sdk
+        run: npm run typecheck -w @brainflow/plugin-sdk
+      - name: Typecheck desktop
+        run: npm run typecheck -w desktop
+      - name: Build desktop web
+        run: npm run build -w desktop
+      - name: Accessibility gate
+        run: node scripts/a11y-check.cjs
+      - name: Prompt-injection fixture index
+        run: node -e "const m=require('./tests/evals/prompt_injection/manifest.json'); if(!m.cases.length) process.exit(1); console.log('cases', m.cases.length)"
+
+  vertical-slice-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install npm
+        run: npm install
+      - name: Install worker
+        working-directory: services/ai-worker
+        run: pip install -e ".[dev]"
+      - name: Vertical-slice smoke
+        run: node scripts/vertical-slice-smoke.cjs
+
+  security-scans:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install
+        run: npm install
+      - name: Security scans (soft-fail)
+        run: node scripts/security-scan-placeholder.cjs all
+      - name: Fuzz entrypoints present
+        run: node scripts/fuzz-entrypoint.cjs
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cargo test (workspace crates)
+        run: cargo test -p brainflow-vault -p brainflow-storage -p brainflow-policy -p brainflow-graph -p brainflow-sync -p brainflow-app-core
+
+  python-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install worker
+        working-directory: services/ai-worker
+        run: pip install -e ".[dev]"
+      - name: Pytest
+        working-directory: services/ai-worker
+        run: pytest -q
+      - name: Ruff
+        working-directory: services/ai-worker
+        run: ruff check brainflow_worker

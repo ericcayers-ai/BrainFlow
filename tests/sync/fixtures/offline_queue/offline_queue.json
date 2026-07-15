@@ -1,0 +1,10 @@
+{
+  "items": [
+    {
+      "id": "q1",
+      "summary": "BrainFlow sync offline",
+      "created_at": "2026-07-15T12:00:00Z",
+      "paths": ["notes/a.md"]
+    }
+  ]
+}

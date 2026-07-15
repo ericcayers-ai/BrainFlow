@@ -40,7 +40,7 @@ Prefer vault folders on a local disk (not OneDrive/Dropbox) when developing.
 ## Branch and pull request expectations
 
 1. Open an issue first for non-trivial changes when you can.
-2. Branch from `master` (or `main` if that becomes default) with a short, descriptive name.
+2. Branch from `main` with a short, descriptive name.
 3. Keep PRs focused; prefer small, reviewable diffs.
 4. Fill out the pull request template (summary, test plan, docs, breaking changes).
 5. Do not claim CI/signing/GA readiness that is not evidenced in-tree.

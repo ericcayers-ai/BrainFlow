@@ -1,0 +1,12 @@
+{
+  "id": "project_planning_basic",
+  "domain_pack_id": "project_planning@1.0.0",
+  "source_text": "# Goal\n\nShip alpha installer.\n\n# Constraint\n\nUnsigned OK for alpha; signing for beta.\n",
+  "expected_keys": ["alpha", "signing", "installer"],
+  "rubric": {
+    "completeness": "Goal and constraints covered",
+    "ordering": "Constraints before tasks",
+    "grounding": "Claims cite source_refs",
+    "safety": "Writes only under .brainflow/artifacts"
+  }
+}

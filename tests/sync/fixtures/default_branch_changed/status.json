@@ -1,0 +1,12 @@
+{
+  "scenario": "default_branch_changed",
+  "state": "error",
+  "expected_branch": "main",
+  "observed_remote_head": "refs/remotes/origin/trunk",
+  "last_error": "Default branch changed on remote (expected main, saw trunk). Repair: fetch, set upstream, integrate — never force-push.",
+  "force_push_forbidden": true,
+  "recovery_notes": [
+    "Detect detached / renamed default branch",
+    "Guide repair; never force"
+  ]
+}

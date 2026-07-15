@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    { "id": "keep", "title": "Keep" },
+    { "id": "gone", "title": "Edited locally" }
+  ],
+  "edges": [
+    { "id": "e1", "from": "keep", "to": "gone" }
+  ]
+}

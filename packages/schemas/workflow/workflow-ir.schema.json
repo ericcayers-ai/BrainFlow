@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/workflow-ir/v1.json",
+  "title": "BrainFlow Workflow IR",
+  "description": "Versioned declarative DAG. Never embed executable code.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "workflow_id",
+    "title",
+    "goal",
+    "pins",
+    "nodes",
+    "edges",
+    "budgets",
+    "completion",
+    "metadata"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "workflow_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "domain_pack_id": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement"],
+      "properties": {
+        "statement": { "type": "string", "minLength": 1 },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "success_metrics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["models", "prompt_pack_version"],
+      "properties": {
+        "models": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["provider", "name"],
+            "properties": {
+              "provider": { "type": "string", "minLength": 1 },
+              "name": { "type": "string", "minLength": 1 },
+              "digest": { "type": "string" }
+            }
+          }
+        },
+        "prompt_pack_version": { "type": "string", "minLength": 1 },
+        "settings_digest": { "type": "string" }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_steps", "max_wall_time_ms", "max_tokens", "max_generated_files", "max_parallel_jobs"],
+      "properties": {
+        "max_steps": { "type": "integer", "minimum": 1, "maximum": 500 },
+        "max_wall_time_ms": { "type": "integer", "minimum": 1000 },
+        "max_tokens": { "type": "integer", "minimum": 1 },
+        "max_cost_usd": { "type": "number", "minimum": 0 },
+        "max_generated_files": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "max_parallel_jobs": { "type": "integer", "minimum": 1, "maximum": 32 }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["terminal_statuses"],
+      "properties": {
+        "criteria": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "terminal_statuses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["succeeded", "failed", "cancelled", "needs_review"]
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["created_at", "created_by"],
+      "properties": {
+        "created_at": { "type": "string", "format": "date-time" },
+        "created_by": { "type": "string", "enum": ["user", "system"] },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "title", "permission_class"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "extract",
+            "retrieve",
+            "llm_plan",
+            "write_artifact",
+            "verify",
+            "human_approve",
+            "summarize"
+          ]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "inputs": { "type": "object" },
+        "outputs": { "type": "object" },
+        "preconditions": { "type": "array", "items": { "type": "string" } },
+        "postconditions": { "type": "array", "items": { "type": "string" } },
+        "timeout_ms": { "type": "integer", "minimum": 1 },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "max": { "type": "integer", "minimum": 0 },
+            "backoff_ms": { "type": "integer", "minimum": 0 },
+            "retry_on": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "token_budget": { "type": "integer", "minimum": 0 },
+        "cost_budget": { "type": "number", "minimum": 0 },
+        "idempotency_key": { "type": "string" },
+        "cache_key": { "type": "string" },
+        "evidence_requirements": { "type": "array", "items": { "type": "string" } },
+        "source_refs": { "type": "array", "items": { "type": "string" } },
+        "allowed_tools": { "type": "array", "items": { "type": "string" } },
+        "permission_class": {
+          "type": "string",
+          "enum": [
+            "read",
+            "safe_overlay",
+            "vault_mutate",
+            "source_mutate",
+            "network_egress",
+            "publish",
+            "shell",
+            "credentials",
+            "approval_required",
+            "network"
+          ]
+        },
+        "branch": { "type": "object" },
+        "review_loop": {
+          "type": "object",
+          "required": ["max_iterations"],
+          "properties": {
+            "max_iterations": { "type": "integer", "minimum": 1, "maximum": 10 }
+          }
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "kind"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "enum": ["data", "control", "approval"] }
+      }
+    }
+  }
+}

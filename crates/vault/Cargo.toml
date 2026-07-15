@@ -1,0 +1,19 @@
+[package]
+name = "brainflow-vault"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Safe vault filesystem: open vault, atomic Markdown writes, portable layout"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+regex = "1"
+
+[dev-dependencies]
+tempfile = { workspace = true }

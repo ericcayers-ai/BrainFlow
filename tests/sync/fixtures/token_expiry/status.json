@@ -1,0 +1,16 @@
+{
+  "scenario": "token_expiry_sso",
+  "state": "backoff",
+  "auth": {
+    "authenticated": false,
+    "method": null,
+    "login": null,
+    "token_hint": null
+  },
+  "last_error": "GitHub API 401 — token expired or SSO authorization required. Reauthenticate; offline queue is preserved.",
+  "recovery_notes": [
+    "Do not clear offline queue on auth failure",
+    "Prompt reauth (PAT or device flow); then drain queue"
+  ],
+  "offline_queue_preserved": true
+}

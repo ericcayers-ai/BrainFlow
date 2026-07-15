@@ -1,0 +1,8 @@
+{
+  "note": "Author/committer dates may skew across devices; merge uses content OIDs not wall clocks.",
+  "authors": [
+    { "device": "A", "authored_at": "2026-07-16T10:00:00+12:00" },
+    { "device": "B", "authored_at": "2026-07-15T22:00:00Z" }
+  ],
+  "expectation": "UI must not prefer newer wall-clock; three-way content merge applies"
+}

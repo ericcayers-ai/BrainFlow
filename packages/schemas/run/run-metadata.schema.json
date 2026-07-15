@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/run-metadata/v1.json",
+  "title": "BrainFlow Run Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "workflow_id",
+    "status",
+    "created_at",
+    "vault_relative_workflow_path"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "run_id": { "type": "string", "format": "uuid" },
+    "workflow_id": { "type": "string", "format": "uuid" },
+    "definition_hash": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "running", "succeeded", "failed", "cancelled", "needs_review"]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "vault_relative_workflow_path": { "type": "string" },
+    "artifact_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "llm": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "model": { "type": "string" },
+        "digest": { "type": "string" }
+      }
+    },
+    "error": { "type": ["string", "null"] },
+    "node_states": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "succeeded",
+              "failed",
+              "skipped",
+              "needs_approval",
+              "cache_hit"
+            ]
+          },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "cache_key": { "type": "string" },
+          "cache_hit": { "type": "boolean" },
+          "error": { "type": "string" }
+        }
+      }
+    },
+    "budgets_used": {
+      "type": "object",
+      "properties": {
+        "steps": { "type": "integer" },
+        "tokens": { "type": "integer" },
+        "generated_files": { "type": "integer" }
+      }
+    },
+    "provenance": { "type": "object" },
+    "events": { "type": "array", "items": { "type": "object" } },
+    "approvals": { "type": "array", "items": { "type": "object" } }
+  }
+}

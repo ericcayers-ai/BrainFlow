@@ -1,0 +1,22 @@
+{
+  "measured_at": "2026-07-15T13:57:42.669Z",
+  "platform": "win32",
+  "node": "v24.18.0",
+  "kind": "react_flow_data_prep_smoke",
+  "target_nodes": 500,
+  "lod_mode": "full",
+  "react_flow_nodes": 500,
+  "react_flow_edges": 499,
+  "prep_p50_ms": 1.37,
+  "prep_p95_ms": 4.02,
+  "elk_main_thread_ms": 1114.08,
+  "budgets": {
+    "flowPrepP95Ms": 100,
+    "elkWarnMs": 500,
+    "nodes": 500
+  },
+  "prep_budget_ok": true,
+  "elk_needs_progress_ui": true,
+  "nvda_claimed": false,
+  "note": "Node harness mirrors WorkflowGraph conversion + LOD + React Flow node/edge shapes. Not a browser pan/zoom mid-tier GPU soak; not NVDA/AT sign-off."
+}

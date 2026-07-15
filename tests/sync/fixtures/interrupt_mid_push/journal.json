@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "state": "pushing",
+  "interrupted_op": "push",
+  "last_error": null,
+  "last_success_at": null,
+  "updated_at": "2026-07-15T12:00:00Z",
+  "op_token": "test-op-token",
+  "remote_url": null,
+  "offline_queue_len": 1,
+  "notes": []
+}

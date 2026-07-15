@@ -1,0 +1,8 @@
+{
+  "os": "Windows",
+  "arch": "AMD64",
+  "cpu": { "logical_cores": 12, "processor": "fixture-mid" },
+  "ram": { "total_bytes": 34359738368, "available_bytes": 21474836480, "total_gb": 32, "available_gb": 20 },
+  "disk": { "free_gb": 200 },
+  "gpu": [{ "vendor": "nvidia", "name": "RTX Fixture", "vram_total_mb": 8192 }]
+}

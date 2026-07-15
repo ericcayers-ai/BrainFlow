@@ -1,0 +1,36 @@
+{
+  "id": "project_planning",
+  "version": "1.0.0",
+  "title": "Project planning",
+  "description": "Compile goals, constraints, milestones, and dependency-ordered tasks into a plan DAG.",
+  "vocabulary": {
+    "goal": "project outcome",
+    "artifact": "project plan",
+    "task": "work item"
+  },
+  "default_goal_hints": [
+    "Infer milestones and dependencies from the brief",
+    "Surface risks and review gates",
+    "Emit a Markdown plan plus task outline under .brainflow/"
+  ],
+  "allowed_node_types": [
+    "extract",
+    "llm_plan",
+    "summarize",
+    "write_artifact",
+    "verify",
+    "human_approve"
+  ],
+  "default_permission_class": "safe_overlay",
+  "templates": {
+    "artifact_plan": "artifacts/{workflow_id}/{run_id}/project_plan.md",
+    "artifact_tasks": "artifacts/{workflow_id}/{run_id}/tasks.md"
+  },
+  "rubric": {
+    "completeness": "Goals, constraints, success metrics present",
+    "ordering": "Dependencies acyclic except bounded review loops",
+    "grounding": "Assumptions labeled vs source facts",
+    "safety": "Destructive/external actions require approval"
+  },
+  "eval_cases": ["project_planning_basic", "project_budget_bound"]
+}

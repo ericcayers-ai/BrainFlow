@@ -1,0 +1,43 @@
+{
+  "measured_at": "2026-07-15T13:20:01.620Z",
+  "platform": "win32",
+  "node": "v24.18.0",
+  "limits": {
+    "workflowEditableTarget": 500,
+    "workflowFullLayoutSoft": 500,
+    "workflowVisibleDefault": 200,
+    "knowledgeClusterAbove": 800,
+    "knowledgeVisibleTarget": 5000,
+    "knowledgePageSize": 400,
+    "absoluteRenderHardMax": 12000
+  },
+  "workflow_500": {
+    "nodes": 500,
+    "graph_nodes": 501,
+    "edges": 500,
+    "generate_ms": 1.02,
+    "graphFromWorkflow_ms": 8.73,
+    "lod_ms": 0.26,
+    "elk_main_thread_layout_ms": 878.68,
+    "path_found": true,
+    "path_len": 9,
+    "note": "ELK measured on main thread (Node); production uses Web Worker"
+  },
+  "knowledge_5000": {
+    "nodes": 5000,
+    "edges": 5293,
+    "generate_ms": 5.41,
+    "lod_mode": "cluster",
+    "lod_visible_nodes": 132,
+    "lod_ms": 24.32,
+    "path_ms": 2.25,
+    "path_found": true,
+    "path_len": 3
+  },
+  "knowledge_5000_page": {
+    "mode": "page",
+    "visible": 400,
+    "page_count": 13,
+    "ms": 1.88
+  }
+}

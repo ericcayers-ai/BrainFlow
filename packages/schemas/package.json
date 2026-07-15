@@ -1,0 +1,35 @@
+{
+  "name": "@brainflow/schemas",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Shared versioned JSON Schemas for BrainFlow (Workflow IR, RPC, runs)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./workflow/workflow-ir.schema.json": "./workflow/workflow-ir.schema.json",
+    "./run/run-metadata.schema.json": "./run/run-metadata.schema.json",
+    "./model-registry/model-registry.schema.json": "./model-registry/model-registry.schema.json",
+    "./ingestion/document-bundle.schema.json": "./ingestion/document-bundle.schema.json",
+    "./graph/graph.schema.json": "./graph/graph.schema.json",
+    "./graph/graph-patch.schema.json": "./graph/graph-patch.schema.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test dist/validate.test.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "~5.8.3"
+  }
+}

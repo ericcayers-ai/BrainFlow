@@ -1,0 +1,19 @@
+[package]
+name = "brainflow-app-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "App commands orchestration: vault + worker supervision helpers"
+
+[dependencies]
+brainflow-vault = { path = "../vault" }
+brainflow-storage = { path = "../storage" }
+brainflow-policy = { path = "../policy" }
+brainflow-graph = { path = "../graph" }
+brainflow-sync = { path = "../sync" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+regex = "1"

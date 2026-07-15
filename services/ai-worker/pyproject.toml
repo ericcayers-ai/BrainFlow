@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brainflow-ai-worker"
+version = "0.1.0"
+description = "Supervised BrainFlow AI / ingestion worker (JSON-RPC over stdio)"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+dependencies = [
+  "httpx>=0.28.0",
+  "jsonschema>=4.23.0",
+  "pydantic>=2.11.0",
+  "PyYAML>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0", "ruff>=0.11.0"]
+secrets = ["keyring>=25.0.0"]
+crypto = ["cryptography>=44.0.0"]
+intake = [
+  "pypdf>=5.1.0",
+  "python-docx>=1.1.2",
+  "python-pptx>=1.0.2",
+  "openpyxl>=3.1.5",
+  "Pillow>=11.0.0",
+  "odfpy>=1.4.1",
+]
+ocr = [
+  "Pillow>=11.0.0",
+  "pytesseract>=0.3.13",
+]
+media = [
+  "faster-whisper>=1.1.0",
+]
+# openai-whisper is heavier; available as alternate install target
+media_whisper = [
+  "openai-whisper>=20240930",
+]
+# Optional future pack — not bundled; see docs/FILE_INGESTION.md §9
+tika = []
+
+[project.scripts]
+brainflow-ai-worker = "brainflow_worker.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["brainflow_worker*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

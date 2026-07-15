@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/graph-patch/v1.json",
+  "title": "BrainFlow Graph Patch (reviewable AI proposals)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ops"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "summary": { "type": "string" },
+    "ops": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["op"],
+        "properties": {
+          "op": {
+            "type": "string",
+            "enum": ["add_node", "remove_node", "update_node", "add_edge", "remove_edge"]
+          },
+          "node": { "type": "object" },
+          "edge": { "type": "object" },
+          "id": { "type": "string", "format": "uuid" },
+          "label": { "type": "string" },
+          "properties": { "type": "object" }
+        }
+      }
+    }
+  }
+}
+

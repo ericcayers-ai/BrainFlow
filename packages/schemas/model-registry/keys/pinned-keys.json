@@ -1,0 +1,9 @@
+{
+  "keys": [
+    {
+      "key_id": "brainflow-dev",
+      "alg": "bf-hmac-v1",
+      "note": "Development HMAC key for local fixtures. Rotate via RELEASE_SECURITY.md. Production uses ed25519."
+    }
+  ]
+}

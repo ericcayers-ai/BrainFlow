@@ -1,0 +1,36 @@
+{
+  "id": "study_prep",
+  "version": "1.0.0",
+  "title": "Study preparation",
+  "description": "Turn notes into study plans, summaries, and flashcard-ready artifacts under .brainflow/.",
+  "vocabulary": {
+    "goal": "learning outcome",
+    "artifact": "study material",
+    "task": "study step"
+  },
+  "default_goal_hints": [
+    "Summarize key concepts with citations to source locators",
+    "Produce a spaced-review outline",
+    "Generate flashcard candidates as Markdown"
+  ],
+  "allowed_node_types": [
+    "extract",
+    "summarize",
+    "retrieve",
+    "write_artifact",
+    "verify",
+    "human_approve"
+  ],
+  "default_permission_class": "safe_overlay",
+  "templates": {
+    "artifact_summary": "artifacts/{workflow_id}/{run_id}/study_summary.md",
+    "artifact_flashcards": "artifacts/{workflow_id}/{run_id}/flashcards.md"
+  },
+  "rubric": {
+    "completeness": "Covers headings present in source",
+    "ordering": "Prerequisites before advanced topics",
+    "grounding": "Claims cite source_refs",
+    "safety": "Writes only under .brainflow/artifacts"
+  },
+  "eval_cases": ["study_prep_basic", "study_prep_injection_fence"]
+}

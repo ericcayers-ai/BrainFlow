@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brainflow.local/schemas/graph/v1.json",
+  "title": "BrainFlow Canonical Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "graph_id", "nodes", "edges"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "graph_id": { "type": "string", "format": "uuid" },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "views": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/view" }
+    }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": ["id", "type", "label"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "File",
+            "Note",
+            "Block",
+            "Entity",
+            "Goal",
+            "Constraint",
+            "Task",
+            "Decision",
+            "Question",
+            "Evidence",
+            "Artifact",
+            "WorkflowStep",
+            "Person"
+          ]
+        },
+        "label": { "type": "string", "minLength": 1 },
+        "properties": { "type": "object" },
+        "locators": { "type": "array", "items": { "type": "string" } },
+        "provenance": { "type": "object" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["id", "type", "from", "to"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "links_to",
+            "derived_from",
+            "supports",
+            "contradicts",
+            "depends_on",
+            "produces",
+            "assigned_to",
+            "precedes",
+            "mentions"
+          ]
+        },
+        "from": { "type": "string", "format": "uuid" },
+        "to": { "type": "string", "format": "uuid" },
+        "properties": { "type": "object" },
+        "weight": { "type": "number" },
+        "provenance": { "type": "object" }
+      }
+    },
+    "view": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["workflow_dag", "mind_map", "tree_outline", "knowledge", "lineage"]
+        },
+        "layout": { "type": "string" },
+        "filters": { "type": "object" },
+        "pinned_positions": { "type": "object" }
+      }
+    }
+  }
+}
+

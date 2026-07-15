@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "nodes": [
+    { "id": "n1", "title": "Device B title", "body": "b" },
+    { "id": "n2", "title": "Stable", "body": "ok" }
+  ],
+  "edges": [{ "id": "e1", "from": "n1", "to": "n2" }]
+}

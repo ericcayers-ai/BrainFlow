@@ -14,7 +14,7 @@ A clear, concise description of the bug.
 
 - **OS:** (e.g. Windows 11 24H2)
 - **BrainFlow version / commit:** (e.g. 0.1.0, or `git rev-parse --short HEAD`)
-- **Install type:** (dev `tauri dev` / local build / other)
+- **Install type:** (dev `tauri dev` / NSIS/MSI from releases / other)
 - **Ollama:** (version + model tags if relevant)
 
 ## Steps to reproduce

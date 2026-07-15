@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "com.example.theme-forest",
+  "name": "Forest theme tokens",
+  "version": "0.1.0",
+  "brainflow_api": "^0.1.0",
+  "permissions": ["theme.contribute", "network.none"],
+  "contributions": {
+    "themes": [
+      {
+        "id": "forest-calm",
+        "label": "Forest calm"
+      }
+    ]
+  },
+  "entry": "dist/theme.wasm"
+}
