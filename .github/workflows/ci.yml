@@ -15,7 +15,11 @@ jobs:
           node-version: "22"
           cache: npm
       - name: Install
-        run: npm install
+        # Reinstall so Linux optional native deps (e.g. @rollup/rollup-linux-x64-gnu)
+        # resolve; Windows-generated lockfiles often omit other-platform optionals.
+        run: |
+          npm install
+          npm install @rollup/rollup-linux-x64-gnu --no-save -w desktop
       - name: Build schemas
         run: npm run build -w @brainflow/schemas
       - name: Test schemas

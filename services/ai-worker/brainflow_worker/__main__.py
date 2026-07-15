@@ -10,7 +10,7 @@ _WORKER_ROOT = Path(__file__).resolve().parents[1]
 if str(_WORKER_ROOT) not in sys.path:
     sys.path.insert(0, str(_WORKER_ROOT))
 
-from brainflow_worker.rpc import handle_request
+from brainflow_worker.rpc import handle_request  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:

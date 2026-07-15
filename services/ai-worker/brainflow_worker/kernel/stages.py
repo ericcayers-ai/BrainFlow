@@ -12,11 +12,17 @@ if str(_WORKER_ROOT) not in sys.path:
     sys.path.insert(0, str(_WORKER_ROOT))
 
 from domain_packs.registry import get_pack, pack_ref, route_pack  # noqa: E402
-
-from brainflow_worker.kernel.delimit import SYSTEM_POLICY_IMMUTABLE, build_bounded_user_message
-from brainflow_worker.kernel.policy_gate import validate_workflow_policy
-from brainflow_worker.kernel.provenance import content_hash, new_run_provenance, utc_now
-from brainflow_worker.validate import validate_workflow_ir
+from brainflow_worker.kernel.delimit import (  # noqa: E402
+    SYSTEM_POLICY_IMMUTABLE,
+    build_bounded_user_message,
+)
+from brainflow_worker.kernel.policy_gate import validate_workflow_policy  # noqa: E402
+from brainflow_worker.kernel.provenance import (  # noqa: E402
+    content_hash,
+    new_run_provenance,
+    utc_now,
+)
+from brainflow_worker.validate import validate_workflow_ir  # noqa: E402
 
 
 STAGES = (

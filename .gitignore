@@ -89,7 +89,10 @@ temp/
 *.orig
 
 # --- OneDrive / cloud sync conflict markers ---
-*_Conflict*
+# Prefer *_Conflict_* so intentional dirs like markdown_conflict/ stay trackable
+# (Windows gitignore matching is case-insensitive and would ignore *_conflict*).
+*_Conflict_*
+* (conflicted copy)*
 *conflicted copy*
 *.sync-conflict-*
 ~$*
