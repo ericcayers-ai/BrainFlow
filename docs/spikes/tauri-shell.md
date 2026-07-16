@@ -53,8 +53,8 @@ Artifacts (when successful) land under workspace `target/release/bundle/` (Cargo
 | Vite `beforeBuildCommand` | **OK** — `dist` **5.75 MiB** (66 files) |
 | `npm run build:desktop` (`CARGO_BUILD_JOBS=2`) | **OK** — release finished in ~10m 41s compile + WiX/NSIS |
 | `desktop.exe` | **19.54 MiB** (20,489,216 bytes) |
-| MSI | `BrainFlow_0.1.0_x64_en-US.msi` — **8.79 MiB** (9,216,000 bytes) |
-| NSIS | `BrainFlow_0.1.0_x64-setup.exe` — **6.84 MiB** (7,169,402 bytes) |
+| MSI | `BrainFlow_0.1.1_x64_en-US.msi` (was `0.1.0` pre-align; rebuild for tag match) |
+| NSIS | `BrainFlow_0.1.1_x64-setup.exe` (was `0.1.0` pre-align; rebuild for tag match) |
 | Cold-start / WebView2 timing | **Measured** 2026-07-16 — see § Cold-start below |
 | Code signing | **Not applied** — unsigned local alpha only |
 

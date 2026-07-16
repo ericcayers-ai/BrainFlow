@@ -97,9 +97,9 @@ Mobile and browser clients are **out of scope for desktop GA**. Discovery may st
 signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 `
   /n "YOUR_ORG_NAME" `
   target\release\desktop.exe `
-  target\release\bundle\nsis\BrainFlow_0.1.0_x64-setup.exe `
-  target\release\bundle\msi\BrainFlow_0.1.0_x64_en-US.msi
-signtool verify /pa target\release\bundle\nsis\BrainFlow_0.1.0_x64-setup.exe
+  target\release\bundle\nsis\BrainFlow_0.1.1_x64-setup.exe `
+  target\release\bundle\msi\BrainFlow_0.1.1_x64_en-US.msi
+signtool verify /pa target\release\bundle\nsis\BrainFlow_0.1.1_x64-setup.exe
 ```
 
 5. Wire the same step into CI release jobs; **fail the job if signature verification fails or the step is skipped** ([RELEASE_SECURITY.md](RELEASE_SECURITY.md) AC-REL-05).  
