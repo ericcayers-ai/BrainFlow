@@ -117,3 +117,6 @@ tests/evals/_results/
 *.dylib
 *.dll
 !vendor/**/*.dll
+
+# Local agent skills (not part of product)
+.agents/

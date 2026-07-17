@@ -46,6 +46,9 @@ type NoteStat = {
 type PaletteMode = "command" | "switcher" | "search" | null;
 type UiMode = "guided" | "studio";
 type VaultSurface = "note" | "bases" | "canvas";
+/** Primary app focus — progressive disclosure per UX_PRINCIPLES.md */
+type FocusView = "workflow" | "notes" | "tools";
+type RailSection = "files" | "links" | "org";
 
 function titleFromPath(path: string) {
   const parts = path.replace(/\\/g, "/").split("/");
@@ -77,6 +80,10 @@ export default function App() {
   const [mode, setMode] = useState<UiMode>("guided");
   const [personaId, setPersonaId] = useState<PersonaId>("student");
   const persona = personaById(personaId);
+  const [focusView, setFocusView] = useState<FocusView>("workflow");
+  const [railSection, setRailSection] = useState<RailSection>("files");
+  const [metaOpen, setMetaOpen] = useState(false);
+  const [toolbarMoreOpen, setToolbarMoreOpen] = useState(false);
 
   const [vaultPath, setVaultPath] = useState("");
   const [onedriveWarning, setOnedriveWarning] = useState(false);
@@ -131,6 +138,24 @@ export default function App() {
   useEffect(() => {
     setPrompt(persona.defaultGoalPrompt);
   }, [persona.defaultGoalPrompt]);
+
+  useEffect(() => {
+    if (!toolbarMoreOpen) return;
+    const onPointer = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest?.(".toolbar-more")) return;
+      setToolbarMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setToolbarMoreOpen(false);
+    };
+    window.addEventListener("mousedown", onPointer);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onPointer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [toolbarMoreOpen]);
 
   const llmLabel = useMemo(() => {
     if (!health) return "LLM: unchecked";
@@ -198,6 +223,7 @@ export default function App() {
       } else {
         setActivePath(path);
         setVaultSurface("note");
+        setFocusView("notes");
       }
       if (opts?.heading || opts?.block) {
         setJumpHeading(opts.heading ?? null);
@@ -917,20 +943,35 @@ export default function App() {
         case "editor.source":
           setEditorMode("source");
           setVaultSurface("note");
+          setFocusView("notes");
           break;
         case "editor.live":
           setEditorMode("live");
           setVaultSurface("note");
+          setFocusView("notes");
           break;
         case "editor.reading":
           setEditorMode("reading");
           setVaultSurface("note");
+          setFocusView("notes");
           break;
         case "view.bases":
+          setFocusView("notes");
           setVaultSurface("bases");
           break;
         case "view.canvas":
+          setFocusView("notes");
           setVaultSurface("canvas");
+          break;
+        case "view.workflow":
+          setFocusView("workflow");
+          break;
+        case "view.notes":
+          setFocusView("notes");
+          break;
+        case "view.tools":
+          setFocusView("tools");
+          setMode("studio");
           break;
         case "pane.split":
           if (activePath) setSplitPath(activePath);
@@ -1071,24 +1112,615 @@ export default function App() {
     />
   );
 
+  const effectiveFocus: FocusView =
+    mode === "guided" && focusView === "tools" ? "workflow" : focusView;
+
+  const vaultSidebar = (
+    <aside
+      className={`panel vault-rail${railCollapsed ? " is-collapsed" : ""}`}
+      aria-label="Vault"
+    >
+      <div className="rail-head">
+        <h2>Vault</h2>
+        <button
+          type="button"
+          className="ghost icon-btn"
+          onClick={() => setRailCollapsed((v) => !v)}
+          aria-expanded={!railCollapsed}
+          aria-label={railCollapsed ? "Expand vault rail" : "Collapse vault rail"}
+        >
+          {railCollapsed ? "▸" : "◂"}
+        </button>
+      </div>
+      {!railCollapsed ? (
+        <>
+          <div className="actions vault-actions">
+            <button type="button" onClick={() => void onPickVault()} disabled={busy}>
+              Open
+            </button>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => void onCreateVault()}
+              disabled={busy}
+            >
+              Create
+            </button>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => void onDailyNote()}
+              disabled={busy || !vaultOpen}
+            >
+              Daily
+            </button>
+          </div>
+          <p className="path vault-path" title={vaultPath || undefined}>
+            {vaultPath || "No vault selected"}
+          </p>
+          {onedriveWarning ? (
+            <p className="warn" role="status">
+              Cloud sync folder detected. Prefer a local disk vault; indexes stay
+              under %LOCALAPPDATA%\BrainFlow.
+            </p>
+          ) : null}
+          {!vaultOpen ? (
+            <div className="empty-card" role="status">
+              <p className="empty-title">Open a vault to begin</p>
+              <p className="muted-copy">
+                Pick a local folder. Notes stay on disk; workflows write derived
+                artifacts under .brainflow/.
+              </p>
+              <div className="actions">
+                <button type="button" className="primary" onClick={() => void onPickVault()}>
+                  Open vault
+                </button>
+                <button type="button" className="ghost" onClick={() => void onCreateVault()}>
+                  Create vault
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div
+                className="rail-tabs"
+                role="tablist"
+                aria-label="Vault sections"
+              >
+                {(
+                  [
+                    ["files", "Files"],
+                    ["links", "Links"],
+                    ["org", "Organize"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={railSection === id}
+                    className={`rail-tab${railSection === id ? " active" : ""}`}
+                    onClick={() => setRailSection(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {railSection === "files" ? (
+                <FileExplorer
+                  vaultOpen={vaultOpen}
+                  activePath={activePath}
+                  onOpenNote={(p) => void openNoteInTab(p)}
+                  refreshKey={explorerKey}
+                />
+              ) : null}
+              {railSection === "links" ? (
+                <LinksPanel
+                  vaultOpen={vaultOpen}
+                  notePath={activePath}
+                  onOpenNote={(p) => void openNoteInTab(p)}
+                  onApplyProperty={(k, v) => void onApplyProperty(k, v)}
+                  refreshKey={linksKey}
+                />
+              ) : null}
+              {railSection === "org" ? (
+                <>
+                  <BookmarksWorkspacesPanel
+                    vaultOpen={vaultOpen}
+                    activePath={activePath}
+                    activeTitle={titleFromPath(activePath)}
+                    refreshKey={orgKey}
+                    onOpenNote={(p) => void openNoteInTab(p)}
+                    onSaveWorkspace={() => void onSaveWorkspace()}
+                    onLoadWorkspace={(id) => void onLoadWorkspace(id)}
+                  />
+                  <FootnotesWordCountPanel
+                    vaultOpen={vaultOpen}
+                    notePath={activePath}
+                    body={noteBody}
+                  />
+                </>
+              ) : null}
+            </>
+          )}
+        </>
+      ) : null}
+    </aside>
+  );
+
+  const notesStage = (
+    <section
+      className={`panel editor-panel${dropActive ? " drop-active" : ""}`}
+      onDragOver={(e) => {
+        if (!vaultOpen) return;
+        e.preventDefault();
+        setDropActive(true);
+      }}
+      onDragLeave={() => setDropActive(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        void onDropFiles(e.dataTransfer.files);
+      }}
+    >
+      <div className="surface-tabs" role="tablist" aria-label="Vault surface">
+        <button
+          type="button"
+          className={`segment${vaultSurface === "note" ? " active" : ""}`}
+          onClick={() => setVaultSurface("note")}
+        >
+          Note
+        </button>
+        <button
+          type="button"
+          className={`segment${vaultSurface === "bases" ? " active" : ""}`}
+          onClick={() => setVaultSurface("bases")}
+        >
+          Bases
+        </button>
+        <button
+          type="button"
+          className={`segment${vaultSurface === "canvas" ? " active" : ""}`}
+          onClick={() => setVaultSurface("canvas")}
+        >
+          Canvas
+        </button>
+      </div>
+
+      {vaultSurface === "bases" ? (
+        <BasesPanel
+          vaultOpen={vaultOpen}
+          onOpenNote={(p) => void openNoteInTab(p)}
+          onNoteMutated={(path, content) => {
+            setBodies((prev) => ({ ...prev, [path]: content }));
+            setLinksKey((k) => k + 1);
+          }}
+          refreshKey={explorerKey}
+        />
+      ) : null}
+
+      {vaultSurface === "canvas" ? (
+        <CanvasPanel
+          vaultOpen={vaultOpen}
+          onOpenNote={(p) => void openNoteInTab(p)}
+          refreshKey={explorerKey}
+        />
+      ) : null}
+
+      {vaultSurface === "note" ? (
+        <>
+          <div className="tab-bar" role="tablist" aria-label="Open notes">
+            {tabs.map((tab) => (
+              <div
+                key={tab.path}
+                className={`tab${tab.path === activePath ? " active" : ""}${tab.pinned ? " pinned" : ""}`}
+                role="tab"
+                aria-selected={tab.path === activePath}
+              >
+                <button
+                  type="button"
+                  className="tab-pin"
+                  aria-label={tab.pinned ? `Unpin ${tab.title}` : `Pin ${tab.title}`}
+                  onClick={() => togglePin(tab.path)}
+                >
+                  {tab.pinned ? "◆" : "◇"}
+                </button>
+                <button
+                  type="button"
+                  className="tab-main"
+                  onClick={() => setActivePath(tab.path)}
+                  onDoubleClick={() => setSplitPath(tab.path)}
+                  title="Double-click to open in split pane"
+                >
+                  {tab.title}
+                  {tab.dirty ? " •" : ""}
+                </button>
+                <button
+                  type="button"
+                  className="tab-close"
+                  aria-label={`Close ${tab.title}`}
+                  onClick={() => closeTab(tab.path)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="ghost tab-new"
+              disabled={!vaultOpen || busy}
+              onClick={() => void onNewFromTemplate()}
+              title="New from template"
+            >
+              +
+            </button>
+          </div>
+
+          {externalWarn ? (
+            <div className="external-warn" role="status">
+              <span>{externalWarn}</span>
+              <button type="button" onClick={() => void reloadFromDisk()}>
+                Reload
+              </button>
+            </div>
+          ) : null}
+
+          <div className="editor-toolbar">
+            <code className="path">{activePath}</code>
+            <div className="mode-toggle" role="group" aria-label="Editor mode">
+              {(
+                [
+                  ["source", "Source"],
+                  ["live", "Live"],
+                  ["reading", "Reading"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`segment${editorMode === id ? " active" : ""}`}
+                  onClick={() => setEditorMode(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => void saveNote()}
+              disabled={busy || !vaultOpen || !activeTab?.dirty}
+            >
+              Save
+            </button>
+            <div className="toolbar-more">
+              <button
+                type="button"
+                className="ghost"
+                aria-expanded={toolbarMoreOpen}
+                aria-haspopup="menu"
+                disabled={!vaultOpen}
+                onClick={() => setToolbarMoreOpen((v) => !v)}
+              >
+                More
+              </button>
+              {toolbarMoreOpen ? (
+                <div className="toolbar-menu" role="menu">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void onRenameNote();
+                    }}
+                  >
+                    Rename…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      setSplitPath((p) => (p ? null : activePath));
+                    }}
+                  >
+                    {splitPath ? "Close split" : "Split pane"}
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void showGraph(true);
+                    }}
+                  >
+                    Local graph
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void showGraph(false);
+                    }}
+                  >
+                    Global graph
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void onToggleBookmark();
+                    }}
+                  >
+                    Bookmark
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void onSaveWorkspace();
+                    }}
+                  >
+                    Save workspace
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={busy || !vaultOpen}
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void onUniqueNote();
+                    }}
+                  >
+                    Unique note
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={busy || !vaultOpen}
+                    onClick={() => {
+                      setToolbarMoreOpen(false);
+                      void onRandomNote();
+                    }}
+                  >
+                    Random note
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+          {graphPreview ? <p className="muted-copy">{graphPreview}</p> : null}
+          {dropActive ? (
+            <p className="drop-hint" role="status">
+              Drop files to import into the vault
+            </p>
+          ) : null}
+
+          <div className={`editor-shell${splitPath ? " has-split" : ""}`}>
+            <div className="editor-pane">{editorNode(activePath)}</div>
+            {splitPath ? (
+              <div className="editor-pane split-pane">
+                <div className="split-head">
+                  <code>{splitPath}</code>
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => setSplitPath(null)}
+                  >
+                    Close
+                  </button>
+                </div>
+                {editorNode(splitPath, { isSplit: true })}
+              </div>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+    </section>
+  );
+
+  const workflowStage = (
+    <section className="panel workflow-panel stage-panel">
+      <header className="stage-head">
+        <div>
+          <h2>Workflow Suite</h2>
+          <p className="stage-sub">
+            {mode === "guided"
+              ? `${persona.workflowTerm} · ${persona.explanationDepth} explanations`
+              : "Graph edit, budgets, models, and sync"}
+          </p>
+        </div>
+        {!vaultOpen ? (
+          <button type="button" className="ghost" onClick={() => void onPickVault()}>
+            Open vault first
+          </button>
+        ) : null}
+      </header>
+
+      {!vaultOpen ? (
+        <div className="empty-card hero-empty" role="status">
+          <p className="empty-title">Start with a vault, then a goal</p>
+          <p className="muted-copy">
+            Open or create a local vault, confirm the LLM is ready, then generate
+            a {persona.workflowTerm}.
+          </p>
+          <div className="actions">
+            <button type="button" className="primary" onClick={() => void onPickVault()}>
+              Open vault
+            </button>
+            <button type="button" onClick={() => void onCreateVault()}>
+              Create vault
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {vaultOpen && health?.ok === false ? (
+        <div className="setup-card" role="alert">
+          <p className="empty-title">LLM unavailable — AI workflows paused</p>
+          <p className="muted-copy">
+            {error ||
+              "Start Ollama (or your configured provider), pull a model, then recheck."}
+          </p>
+          <button
+            type="button"
+            className="primary"
+            onClick={() => void refreshHealth()}
+            disabled={busy}
+          >
+            Recheck LLM
+          </button>
+        </div>
+      ) : null}
+
+      <label className="field">
+        <span>Goal</span>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={mode === "guided" ? 4 : 3}
+          placeholder={`Describe the ${persona.workflowTerm} you want…`}
+          disabled={!vaultOpen}
+        />
+      </label>
+      <div className="actions workflow-cta">
+        <button
+          type="button"
+          className="primary"
+          onClick={() => void onGenerate()}
+          disabled={busy || !vaultPath || health?.ok === false}
+        >
+          Generate {persona.workflowTerm}
+        </button>
+        <span className="kbd-hint">
+          <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
+        </span>
+      </div>
+      <p className="status" role="status">
+        {status}
+      </p>
+      {error && health?.ok !== false ? (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      ) : null}
+
+      <WorkflowSuite
+        workflow={workflow}
+        previousWorkflow={previousWorkflow}
+        liveMessage={status}
+      />
+
+      <details
+        className="meta-details"
+        open={metaOpen}
+        onToggle={(e) => setMetaOpen((e.target as HTMLDetailsElement).open)}
+      >
+        <summary>
+          {persona.artifactTerm} & run metadata
+        </summary>
+        <div className="meta-grid">
+          <div>
+            <h3>{persona.artifactTerm}</h3>
+            <code>{artifactPath || "—"}</code>
+          </div>
+          <div>
+            <h3>Run metadata</h3>
+            <pre>{runMeta ? JSON.stringify(runMeta, null, 2) : "—"}</pre>
+          </div>
+        </div>
+      </details>
+    </section>
+  );
+
+  const toolsStage = (
+    <section className="panel tools-panel stage-panel">
+      <header className="stage-head">
+        <div>
+          <h2>Studio tools</h2>
+          <p className="stage-sub">Models, sync, and display preferences</p>
+        </div>
+      </header>
+      <ModelIntelligencePanel compact />
+      <SyncPanel vaultOpen={vaultOpen} />
+      <fieldset className="prefs-fieldset">
+        <legend>Display</legend>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={theme.contrast === "high"}
+            onChange={(e) =>
+              setTheme((t0) => ({
+                ...t0,
+                contrast: e.target.checked ? "high" : "default",
+              }))
+            }
+          />
+          High contrast
+        </label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={theme.density === "compact"}
+            onChange={(e) =>
+              setTheme((t0) => ({
+                ...t0,
+                density: e.target.checked ? "compact" : "comfortable",
+              }))
+            }
+          />
+          Compact density
+        </label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={theme.reduceMotion}
+            onChange={(e) =>
+              setTheme((t0) => ({
+                ...t0,
+                reduceMotion: e.target.checked,
+              }))
+            }
+          />
+          Reduce motion
+        </label>
+      </fieldset>
+    </section>
+  );
+
   return (
-    <div className="app" data-mode={mode}>
+    <div className="app" data-mode={mode} data-focus={effectiveFocus}>
+      <a className="skip-link" href="#main-stage">
+        Skip to main content
+      </a>
       <header className="top">
         <div className="brand">
           <span className="mark" aria-hidden />
           <div>
             <h1>BrainFlow</h1>
-            <p className="tagline">
-              Workflow suite · local-first · LLM-required for AI
-            </p>
+            <p className="tagline">Local-first workflow suite</p>
           </div>
         </div>
         <div className="chrome-controls">
+          <button
+            type="button"
+            className="search-affordance"
+            onClick={() => setPalette("command")}
+            title="Command palette (Ctrl+K)"
+          >
+            <span>Search or run a command…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
           <div className="mode-toggle" role="group" aria-label="Experience mode">
             <button
               type="button"
               className={`segment${mode === "guided" ? " active" : ""}`}
-              onClick={() => setMode("guided")}
+              onClick={() => {
+                setMode("guided");
+                if (focusView === "tools") setFocusView("workflow");
+              }}
             >
               {t("mode.guided", "Guided")}
             </button>
@@ -1105,6 +1737,7 @@ export default function App() {
             <select
               value={personaId}
               onChange={(e) => setPersonaId(e.target.value as PersonaId)}
+              title="Persona vocabulary"
             >
               {PERSONAS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -1113,31 +1746,9 @@ export default function App() {
               ))}
             </select>
           </label>
-          <div className="top-actions">
-            <button
-              type="button"
-              className="ghost"
-              onClick={() => setPalette("command")}
-            >
-              Commands
-            </button>
-            <button
-              type="button"
-              className="ghost"
-              onClick={() => setPalette("switcher")}
-            >
-              Switch
-            </button>
-            <button
-              type="button"
-              className="ghost"
-              onClick={() => setPalette("search")}
-            >
-              Search
-            </button>
-          </div>
-          <div className="health" data-ok={health?.ok ?? false}>
-            {llmLabel}
+          <div className="health" data-ok={health?.ok ?? false} title={llmLabel}>
+            <span className="health-dot" aria-hidden />
+            <span className="health-label">{llmLabel}</span>
             <button
               type="button"
               className="ghost"
@@ -1150,417 +1761,64 @@ export default function App() {
         </div>
       </header>
 
-      <p className="mode-hint" role="status">
-        {mode === "guided"
-          ? `Guided · ${persona.workflowTerm} · ${persona.explanationDepth} explanations`
-          : `Studio · edit graphs, models, sync, and vault overlays`}
-      </p>
-
-      <main
-        className={`layout layout-workspace${railCollapsed ? " rail-collapsed" : ""}`}
-      >
-        <aside className="panel vault-rail" aria-label="Vault">
-          <div className="rail-head">
-            <h2>Vault</h2>
-            <button
-              type="button"
-              className="ghost"
-              onClick={() => setRailCollapsed((v) => !v)}
-              aria-label="Collapse vault rail"
-            >
-              {railCollapsed ? "▸" : "◂"}
-            </button>
-          </div>
-          {!railCollapsed ? (
-            <>
-              <div className="actions">
-                <button type="button" onClick={() => void onPickVault()} disabled={busy}>
-                  Open…
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void onCreateVault()}
-                  disabled={busy}
-                >
-                  Create…
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void onDailyNote()}
-                  disabled={busy || !vaultOpen}
-                >
-                  Daily
-                </button>
-              </div>
-              <p className="path">{vaultPath || "No vault selected"}</p>
-              {onedriveWarning ? (
-                <p className="warn" role="status">
-                  This path looks like a cloud sync root (e.g. OneDrive). Prefer a
-                  local disk vault; indexes stay under %LOCALAPPDATA%\BrainFlow.
-                </p>
-              ) : null}
-              <FileExplorer
-                vaultOpen={vaultOpen}
-                activePath={activePath}
-                onOpenNote={(p) => void openNoteInTab(p)}
-                refreshKey={explorerKey}
-              />
-              <LinksPanel
-                vaultOpen={vaultOpen}
-                notePath={activePath}
-                onOpenNote={(p) => void openNoteInTab(p)}
-                onApplyProperty={(k, v) => void onApplyProperty(k, v)}
-                refreshKey={linksKey}
-              />
-              <BookmarksWorkspacesPanel
-                vaultOpen={vaultOpen}
-                activePath={activePath}
-                activeTitle={titleFromPath(activePath)}
-                refreshKey={orgKey}
-                onOpenNote={(p) => void openNoteInTab(p)}
-                onSaveWorkspace={() => void onSaveWorkspace()}
-                onLoadWorkspace={(id) => void onLoadWorkspace(id)}
-              />
-              <FootnotesWordCountPanel
-                vaultOpen={vaultOpen}
-                notePath={activePath}
-                body={noteBody}
-              />
-            </>
-          ) : null}
-        </aside>
-
-        <section
-          className={`panel editor-panel${dropActive ? " drop-active" : ""}`}
-          onDragOver={(e) => {
-            if (!vaultOpen) return;
-            e.preventDefault();
-            setDropActive(true);
-          }}
-          onDragLeave={() => setDropActive(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            void onDropFiles(e.dataTransfer.files);
-          }}
-        >
-          <div className="surface-tabs" role="tablist" aria-label="Vault surface">
-            <button
-              type="button"
-              className={`segment${vaultSurface === "note" ? " active" : ""}`}
-              onClick={() => setVaultSurface("note")}
-            >
-              Note
-            </button>
-            <button
-              type="button"
-              className={`segment${vaultSurface === "bases" ? " active" : ""}`}
-              onClick={() => setVaultSurface("bases")}
-            >
-              Bases
-            </button>
-            <button
-              type="button"
-              className={`segment${vaultSurface === "canvas" ? " active" : ""}`}
-              onClick={() => setVaultSurface("canvas")}
-            >
-              Canvas
-            </button>
-          </div>
-
-          {vaultSurface === "bases" ? (
-            <BasesPanel
-              vaultOpen={vaultOpen}
-              onOpenNote={(p) => void openNoteInTab(p)}
-              onNoteMutated={(path, content) => {
-                setBodies((prev) => ({ ...prev, [path]: content }));
-                setLinksKey((k) => k + 1);
-              }}
-              refreshKey={explorerKey}
-            />
-          ) : null}
-
-          {vaultSurface === "canvas" ? (
-            <CanvasPanel
-              vaultOpen={vaultOpen}
-              onOpenNote={(p) => void openNoteInTab(p)}
-              refreshKey={explorerKey}
-            />
-          ) : null}
-
-          {vaultSurface === "note" ? (
-            <>
-              <div className="tab-bar" role="tablist" aria-label="Open notes">
-                {tabs.map((t) => (
-                  <div
-                    key={t.path}
-                    className={`tab${t.path === activePath ? " active" : ""}${t.pinned ? " pinned" : ""}`}
-                    role="tab"
-                    aria-selected={t.path === activePath}
-                  >
-                    <button
-                      type="button"
-                      className="tab-pin"
-                      aria-label={t.pinned ? `Unpin ${t.title}` : `Pin ${t.title}`}
-                      onClick={() => togglePin(t.path)}
-                    >
-                      {t.pinned ? "◆" : "◇"}
-                    </button>
-                    <button
-                      type="button"
-                      className="tab-main"
-                      onClick={() => setActivePath(t.path)}
-                      onDoubleClick={() => setSplitPath(t.path)}
-                      title="Double-click to open in split pane"
-                    >
-                      {t.title}
-                      {t.dirty ? " •" : ""}
-                    </button>
-                    <button
-                      type="button"
-                      className="tab-close"
-                      aria-label={`Close ${t.title}`}
-                      onClick={() => closeTab(t.path)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="ghost tab-new"
-                  disabled={!vaultOpen || busy}
-                  onClick={() => void onNewFromTemplate()}
-                  title="New from template"
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  className="ghost tab-new"
-                  disabled={!vaultOpen || busy}
-                  onClick={() => void onUniqueNote()}
-                  title="Unique note"
-                >
-                  ※
-                </button>
-                <button
-                  type="button"
-                  className="ghost tab-new"
-                  disabled={!vaultOpen || busy}
-                  onClick={() => void onRandomNote()}
-                  title="Random note"
-                >
-                  ⟳
-                </button>
-              </div>
-
-              {externalWarn ? (
-                <div className="external-warn" role="status">
-                  <span>{externalWarn}</span>
-                  <button type="button" onClick={() => void reloadFromDisk()}>
-                    Reload
-                  </button>
-                </div>
-              ) : null}
-
-              <div className="editor-toolbar">
-                <code className="path">{activePath}</code>
-                <div className="mode-toggle" role="group" aria-label="Editor mode">
-                  {(
-                    [
-                      ["source", "Source"],
-                      ["live", "Live"],
-                      ["reading", "Reading"],
-                    ] as const
-                  ).map(([id, label]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      className={`segment${editorMode === id ? " active" : ""}`}
-                      onClick={() => setEditorMode(id)}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void saveNote()}
-                  disabled={busy || !vaultOpen}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() => void onRenameNote()}
-                  disabled={!vaultOpen}
-                >
-                  Rename…
-                </button>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() =>
-                    setSplitPath((p) => (p ? null : activePath))
-                  }
-                  disabled={!vaultOpen}
-                >
-                  {splitPath ? "Close split" : "Split"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void showGraph(true)}
-                  disabled={!vaultOpen}
-                >
-                  Local graph
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void showGraph(false)}
-                  disabled={!vaultOpen}
-                >
-                  Global graph
-                </button>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() => void onToggleBookmark()}
-                  disabled={!vaultOpen}
-                >
-                  Bookmark
-                </button>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() => void onSaveWorkspace()}
-                  disabled={!vaultOpen}
-                >
-                  Save workspace
-                </button>
-              </div>
-              {graphPreview ? <p className="muted-copy">{graphPreview}</p> : null}
-              {dropActive ? (
-                <p className="drop-hint" role="status">
-                  Drop files to import into the vault
-                </p>
-              ) : null}
-
-              <div className={`editor-shell${splitPath ? " has-split" : ""}`}>
-                <div className="editor-pane">{editorNode(activePath)}</div>
-                {splitPath ? (
-                  <div className="editor-pane split-pane">
-                    <div className="split-head">
-                      <code>{splitPath}</code>
-                      <button
-                        type="button"
-                        className="ghost"
-                        onClick={() => setSplitPath(null)}
-                      >
-                        Close
-                      </button>
-                    </div>
-                    {editorNode(splitPath, { isSplit: true })}
-                  </div>
-                ) : null}
-              </div>
-            </>
-          ) : null}
-        </section>
-
-        <section className="panel workflow-panel">
-          <h2>Workflow Suite</h2>
-          <label className="field">
-            <span>Goal prompt ({persona.workflowTerm})</span>
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              rows={3}
-            />
-          </label>
-          <div className="actions">
-            <button
-              type="button"
-              className="primary"
-              onClick={() => void onGenerate()}
-              disabled={busy || !vaultPath || health?.ok === false}
-            >
-              Generate {persona.workflowTerm} (LLM)
-            </button>
-          </div>
-          <p className="status" role="status">
-            {status}
-          </p>
-          {error ? (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          ) : null}
-
-          <WorkflowSuite
-            workflow={workflow}
-            previousWorkflow={previousWorkflow}
-            liveMessage={status}
-          />
-
-          <div className="meta-grid">
-            <div>
-              <h3>{persona.artifactTerm}</h3>
-              <code>{artifactPath || "—"}</code>
-            </div>
-            <div>
-              <h3>Run metadata</h3>
-              <pre>{runMeta ? JSON.stringify(runMeta, null, 2) : "—"}</pre>
-            </div>
-          </div>
-
+      <div className="shell">
+        <nav className="activity-rail" aria-label="Primary navigation">
+          <button
+            type="button"
+            className={`activity-btn${effectiveFocus === "workflow" ? " active" : ""}`}
+            aria-current={effectiveFocus === "workflow" ? "page" : undefined}
+            onClick={() => setFocusView("workflow")}
+            title="Workflow Suite (Ctrl+1)"
+          >
+            <span className="activity-icon" aria-hidden>
+              ◇
+            </span>
+            <span className="activity-label">Workflow</span>
+          </button>
+          <button
+            type="button"
+            className={`activity-btn${effectiveFocus === "notes" ? " active" : ""}`}
+            aria-current={effectiveFocus === "notes" ? "page" : undefined}
+            onClick={() => setFocusView("notes")}
+            title="Notes & vault (Ctrl+2)"
+          >
+            <span className="activity-icon" aria-hidden>
+              ≡
+            </span>
+            <span className="activity-label">Notes</span>
+          </button>
           {mode === "studio" ? (
-            <div className="studio-block">
-              <ModelIntelligencePanel compact />
-              <SyncPanel vaultOpen={vaultOpen} />
-              <label className="check">
-                <input
-                  type="checkbox"
-                  checked={theme.contrast === "high"}
-                  onChange={(e) =>
-                    setTheme((t0) => ({
-                      ...t0,
-                      contrast: e.target.checked ? "high" : "default",
-                    }))
-                  }
-                />
-                High contrast
-              </label>
-              <label className="check">
-                <input
-                  type="checkbox"
-                  checked={theme.density === "compact"}
-                  onChange={(e) =>
-                    setTheme((t0) => ({
-                      ...t0,
-                      density: e.target.checked ? "compact" : "comfortable",
-                    }))
-                  }
-                />
-                Compact density
-              </label>
-              <label className="check">
-                <input
-                  type="checkbox"
-                  checked={theme.reduceMotion}
-                  onChange={(e) =>
-                    setTheme((t0) => ({
-                      ...t0,
-                      reduceMotion: e.target.checked,
-                    }))
-                  }
-                />
-                Reduce motion
-              </label>
-            </div>
+            <button
+              type="button"
+              className={`activity-btn${effectiveFocus === "tools" ? " active" : ""}`}
+              aria-current={effectiveFocus === "tools" ? "page" : undefined}
+              onClick={() => setFocusView("tools")}
+              title="Studio tools (Ctrl+3)"
+            >
+              <span className="activity-icon" aria-hidden>
+                ✶
+              </span>
+              <span className="activity-label">Tools</span>
+            </button>
           ) : null}
-        </section>
-      </main>
+        </nav>
+
+        <main
+          id="main-stage"
+          className={`layout layout-focus layout-${effectiveFocus}${
+            effectiveFocus === "notes" && railCollapsed ? " rail-collapsed" : ""
+          }`}
+        >
+          {effectiveFocus === "workflow" ? workflowStage : null}
+          {effectiveFocus === "notes" ? (
+            <>
+              {vaultSidebar}
+              {notesStage}
+            </>
+          ) : null}
+          {effectiveFocus === "tools" ? toolsStage : null}
+        </main>
+      </div>
 
       <CommandPalette
         open={palette !== null}

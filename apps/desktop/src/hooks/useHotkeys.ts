@@ -36,6 +36,9 @@ export function useHotkeys(
       else if (key === "m" && shift) id = "mode.toggle";
       else if (key === "l" && shift) id = "llm.refresh";
       else if (key === "e" && shift) id = "export.publishStub";
+      else if (key === "1" && !shift) id = "view.workflow";
+      else if (key === "2" && !shift) id = "view.notes";
+      else if (key === "3" && !shift) id = "view.tools";
 
       if (!id) return;
       if (
@@ -44,7 +47,10 @@ export function useHotkeys(
         id !== "note.save" &&
         id !== "workflow.generate" &&
         id !== "note.switcher" &&
-        id !== "note.search"
+        id !== "note.search" &&
+        id !== "view.workflow" &&
+        id !== "view.notes" &&
+        id !== "view.tools"
       ) {
         return;
       }
