@@ -780,6 +780,10 @@ body {
   font-weight: 600;
 }
 
+.stage-head h2 {
+  margin: 0;
+}
+
 .panel h3 {
   margin: 0 0 0.4rem;
   font-size: 0.8rem;

@@ -1532,11 +1532,22 @@ export default function App() {
               : "Graph edit, budgets, models, and sync"}
           </p>
         </div>
-        {!vaultOpen ? (
-          <button type="button" className="ghost" onClick={() => void onPickVault()}>
-            Open vault first
-          </button>
-        ) : null}
+        <div className="stage-head-actions">
+          {vaultOpen ? (
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => setFocusView("notes")}
+              title="Open notes view"
+            >
+              Notes
+            </button>
+          ) : (
+            <button type="button" className="ghost" onClick={() => void onPickVault()}>
+              Open vault first
+            </button>
+          )}
+        </div>
       </header>
 
       {!vaultOpen ? (
