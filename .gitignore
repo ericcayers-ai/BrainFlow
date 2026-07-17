@@ -120,3 +120,4 @@ tests/evals/_results/
 
 # Local agent skills (not part of product)
 .agents/
+skills-lock.json
