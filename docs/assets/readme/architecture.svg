@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-label="BrainFlow architecture">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b120e"/>
+      <stop offset="100%" stop-color="#101a14"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2f9e63"/>
+      <stop offset="100%" stop-color="#1d5c3d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1120" height="420" rx="16" fill="url(#bg)"/>
+  <text x="40" y="48" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="22" font-weight="600">Architecture</text>
+  <text x="40" y="74" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14">One shared data model · desktop-first · local-first</text>
+
+  <!-- boxes -->
+  <g font-family="IBM Plex Sans, Segoe UI, sans-serif">
+    <rect x="40" y="110" width="200" height="120" rx="12" fill="#121c17" stroke="#2a4034"/>
+    <rect x="40" y="110" width="200" height="8" rx="4" fill="url(#accent)"/>
+    <text x="56" y="150" fill="#3dbf7a" font-size="12" font-weight="600">apps/desktop</text>
+    <text x="56" y="176" fill="#e8f1ea" font-size="14">React · Vite · Tauri 2</text>
+    <text x="56" y="198" fill="#92a79a" font-size="12">Workflow Suite · Vault</text>
+    <text x="56" y="216" fill="#92a79a" font-size="12">Command palette</text>
+
+    <rect x="280" y="110" width="200" height="120" rx="12" fill="#121c17" stroke="#2a4034"/>
+    <rect x="280" y="110" width="200" height="8" rx="4" fill="url(#accent)"/>
+    <text x="296" y="150" fill="#3dbf7a" font-size="12" font-weight="600">crates/*</text>
+    <text x="296" y="176" fill="#e8f1ea" font-size="14">Rust core</text>
+    <text x="296" y="198" fill="#92a79a" font-size="12">vault · storage · graph</text>
+    <text x="296" y="216" fill="#92a79a" font-size="12">sync · policy</text>
+
+    <rect x="520" y="110" width="220" height="120" rx="12" fill="#121c17" stroke="#2a4034"/>
+    <rect x="520" y="110" width="220" height="8" rx="4" fill="url(#accent)"/>
+    <text x="536" y="150" fill="#3dbf7a" font-size="12" font-weight="600">services/ai-worker</text>
+    <text x="536" y="176" fill="#e8f1ea" font-size="14">Python JSON-RPC</text>
+    <text x="536" y="198" fill="#92a79a" font-size="12">Ollama gateway</text>
+    <text x="536" y="216" fill="#92a79a" font-size="12">Fail-closed without LLM</text>
+
+    <rect x="780" y="110" width="300" height="120" rx="12" fill="#121c17" stroke="#2a4034"/>
+    <rect x="780" y="110" width="300" height="8" rx="4" fill="url(#accent)"/>
+    <text x="796" y="150" fill="#3dbf7a" font-size="12" font-weight="600">packages/</text>
+    <text x="796" y="176" fill="#e8f1ea" font-size="14">schemas · plugin-sdk</text>
+    <text x="796" y="198" fill="#92a79a" font-size="12">Workflow IR · run metadata</text>
+    <text x="796" y="216" fill="#92a79a" font-size="12">Capability allowlists</text>
+  </g>
+
+  <!-- arrows -->
+  <g stroke="#3dbf7a" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M240 170 H280"/>
+    <path d="M480 170 H520"/>
+    <path d="M740 170 H780"/>
+  </g>
+
+  <rect x="40" y="270" width="1040" height="110" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <text x="60" y="310" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="16" font-weight="600">Local vault on disk</text>
+  <text x="60" y="338" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="13">notes/ · .brainflow/artifacts/ · immutable linked sources · indexes in OS app data</text>
+  <text x="60" y="360" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="13">Derived writes only — originals stay read-only by default</text>
+</svg>
