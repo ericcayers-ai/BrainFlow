@@ -315,7 +315,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-app-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "brainflow-graph",
  "brainflow-policy",
@@ -332,7 +332,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-graph"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -342,7 +342,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-policy"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -351,7 +351,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-storage"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "rusqlite",
  "serde",
@@ -361,7 +361,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-sync"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -382,7 +382,7 @@ dependencies = [
 
 [[package]]
 name = "brainflow-vault"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "hex",
@@ -871,7 +871,7 @@ dependencies = [
 
 [[package]]
 name = "desktop"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "brainflow-app-core",
  "brainflow-graph",
