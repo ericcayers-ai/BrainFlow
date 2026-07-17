@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="260" viewBox="0 0 1120 260" role="img" aria-label="Vertical slice flow">
+  <defs>
+    <marker id="m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#3dbf7a"/>
+    </marker>
+  </defs>
+  <rect width="1120" height="260" rx="16" fill="#0c1410"/>
+  <text x="40" y="42" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="20" font-weight="600">Vertical slice</text>
+  <text x="40" y="66" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="13">Open vault → confirm LLM → generate workflow → graph → artifact → restore session</text>
+  <rect x="40" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="68" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="68" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">1</text>
+  <text x="92" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">Open vault</text>
+  <text x="60" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">local folder</text>
+  <path d="M190 150 H210" stroke="#3dbf7a" stroke-width="2" marker-end="url(#m)"/>
+  <rect x="220" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="248" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="248" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">2</text>
+  <text x="272" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">LLM health</text>
+  <text x="240" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">fail-closed</text>
+  <path d="M370 150 H390" stroke="#3dbf7a" stroke-width="2" marker-end="url(#m)"/>
+  <rect x="400" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="428" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="428" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">3</text>
+  <text x="452" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">Generate</text>
+  <text x="420" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">Workflow IR</text>
+  <path d="M550 150 H570" stroke="#3dbf7a" stroke-width="2" marker-end="url(#m)"/>
+  <rect x="580" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="608" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="608" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">4</text>
+  <text x="632" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">Graph DAG</text>
+  <text x="600" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">React Flow</text>
+  <path d="M730 150 H750" stroke="#3dbf7a" stroke-width="2" marker-end="url(#m)"/>
+  <rect x="760" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="788" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="788" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">5</text>
+  <text x="812" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">Artifact</text>
+  <text x="780" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">.brainflow/</text>
+  <path d="M910 150 H930" stroke="#3dbf7a" stroke-width="2" marker-end="url(#m)"/>
+  <rect x="940" y="100" width="150" height="100" rx="12" fill="#121c17" stroke="#2a4034"/>
+  <circle cx="968" cy="132" r="14" fill="#1a3d2c" stroke="#3dbf7a"/>
+  <text x="968" y="137" text-anchor="middle" fill="#3dbf7a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12" font-weight="700">6</text>
+  <text x="992" y="137" fill="#e8f1ea" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="14" font-weight="600">Reopen</text>
+  <text x="960" y="172" fill="#92a79a" font-family="IBM Plex Sans, Segoe UI, sans-serif" font-size="12">session.json</text>
+</svg>
